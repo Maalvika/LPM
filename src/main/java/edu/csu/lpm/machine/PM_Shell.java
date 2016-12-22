@@ -15,7 +15,7 @@ import java.sql.SQLException;
 public class PM_Shell {
 
     private Parser_implement p = Parser_implement.getInstance();
-    private PrintWriter out;
+    public static PrintWriter out;
     private BufferedReader in;
 
     public PM_Shell(PrintWriter out, BufferedReader in) {

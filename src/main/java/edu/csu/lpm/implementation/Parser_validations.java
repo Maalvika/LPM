@@ -22,7 +22,7 @@ public class Parser_validations {
     public static String validate(String e) {
 
         Parser.LPM_COMMANDS pmCmd = Parser.LPM_COMMANDS.valueOf(e.split(" ")[0]);
-        String errorMsg = "";
+        String errorMsg = "success";
         switch (pmCmd) {
             case COUNT_CAPABILITIES_CLASSES:
                 if (Parse_and_Execute.command_COUNT_CAPABILITIES_CLASSES(e) == INDICATE_ARGUMENT_MISMATCH) {
@@ -148,6 +148,8 @@ public class Parser_validations {
 
                 }
                 break;
+            default:
+                errorMsg = "";
 
         }
         return errorMsg;

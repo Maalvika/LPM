@@ -28,6 +28,7 @@ import edu.csu.lpm.DB.implementation.DB_Dispatcher;
 import edu.csu.lpm.DB.implementation.RecordDAO_implement;
 import edu.csu.lpm.interfaces.LinuxCapabilitiesPolicyContainer;
 import edu.csu.lpm.interfaces.Parser;
+import edu.csu.lpm.machine.PM_Shell;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
@@ -40,7 +41,6 @@ import java.util.logging.Logger;
  */
 public class Parser_implement implements Parser {
 
-    
     ///////////////// STATIC VARIABLES ///////////////////////////////////////
     static ArrayList<String> commandParameters = null;
     static CapabilitiesClassesTableRecord caprec = null;
@@ -52,15 +52,14 @@ public class Parser_implement implements Parser {
     static int resultSize = -1;
     static String ERROR_MESSAGE = null;
     static Enforcer_implement ei = null;
-    
+
     //////////////////////// PRIVATE STATIC VARIABLES////////////////////////
-    
     private static Parser_implement parser;
     private StringTokenizer tokenizer = null;
-    
+
     //This is set by the Parser Execute Class to record the various responses
     private static Integer returnResult;
-    
+
     ///////////////////////// PRIVATE VARIABLES ///////////////////////////////
     private DB_Dispatcher dd = null;
 
@@ -70,7 +69,7 @@ public class Parser_implement implements Parser {
         ERROR_MESSAGE = new String();
         ei = new Enforcer_implement();
     }
-    
+
     public static Parser_implement getInstance() {
 
         if (parser == null) {
@@ -168,12 +167,12 @@ public class Parser_implement implements Parser {
             if (this.dd != null) {
                 try {
                     Parser_implement.db = this.dd.dispatch_DB_Access();
-                    
+
                 } catch (SQLException sex) {
                     Logger.getLogger(Parser_implement.class.getName()).log(Level.SEVERE, null, sex);
                 }
             }
-        } 
+        }
         if (userdb == null) {
             try {
                 userdb = dd.dispatch_userDB_Access();
@@ -190,7 +189,7 @@ public class Parser_implement implements Parser {
             return INDICATE_CONDITIONAL_EXIT_STATUS;
         }
     }
-    
+
     public UserAuthDAO getUserAuthDAO() {
         if (userdb == null) {
             try {
@@ -203,55 +202,63 @@ public class Parser_implement implements Parser {
         }
         return userdb;
     }
- 
+
     /**
-     *  Removed the if statements and added it to the validations class
-     *  
+     * Removed the if statements and added it to the validations class
+     *
      * @param e
-     * @return 
+     * @return
      */
     @Override
     public int parse_and_execute_Command(String e) {
-        if (e == null) {
+        try {
+            if (e == null) {
+                return INDICATE_INVALID_ARGUMENT_VALUE;
+            }
+
+            if (this.obtain_DB_Handler() != INDICATE_EXECUTION_SUCCESS) {
+                return INDICATE_CONDITIONAL_EXIT_STATUS;
+            }
+
+            set_ERROR_MESSAGE("");
+            refill_ResultOutput("");
+            e = e.trim();
+            String resultValidate = Parser_validations.validate(e);
+            if (e.isEmpty() || e.equals("")) {
+                refill_ResultOutput("");
+                set_ERROR_MESSAGE("");
+                return INDICATE_EXECUTION_SUCCESS;
+            } else if (e.equals("\n")) {
+                refill_ResultOutput("");
+                set_ERROR_MESSAGE("");
+
+            } else if (!resultValidate.equalsIgnoreCase("success") || !resultValidate.equals("")) {
+                // Check for all other command conditions
+                set_ERROR_MESSAGE(Parser_validations.validate(e));
+                return INDICATE_CONDITIONAL_EXIT_STATUS;
+            } else if (e.indexOf(LPM_COMMANDS.SHOW_CAPABILITIES.toString()) == INDICATE_EXECUTION_SUCCESS) {
+                this.parse_and_execute_SHOW_CAPABILITIES(e);
+            } else if (e.indexOf(LPM_COMMANDS.HELP.toString()) == INDICATE_EXECUTION_SUCCESS) {
+                this.parse_and_execute_HELP(e);
+            } else if (e.indexOf(LPM_COMMANDS.EXIT.toString()) == INDICATE_EXECUTION_SUCCESS) {
+                return Parser.INDICATE_IMMEDIATE_EXIT_STATUS;
+
+                /* add support for communicative classes */
+            } else {
+                if (resultValidate.equalsIgnoreCase("success")) {
+                    return INDICATE_EXECUTION_SUCCESS;
+                }
+                this.parse_and_execute_HELP(e);
+            }
+
+            if (returnResult != null) {
+                return returnResult;
+            }
+            return INDICATE_EXECUTION_SUCCESS;
+        } catch (IllegalArgumentException ae) {
+            PM_Shell.out.println("Invalid command value");
             return INDICATE_INVALID_ARGUMENT_VALUE;
         }
-
-        if (this.obtain_DB_Handler() != INDICATE_EXECUTION_SUCCESS) {
-            return INDICATE_CONDITIONAL_EXIT_STATUS;
-        }
-
-        set_ERROR_MESSAGE("");
-        refill_ResultOutput("");
-        e = e.trim();
-        
-        if (e.isEmpty() || e.equals("")) {
-            refill_ResultOutput("");
-            set_ERROR_MESSAGE("");
-            return INDICATE_EXECUTION_SUCCESS;
-        } else if (e.equals("\n")) {
-            refill_ResultOutput("");
-            set_ERROR_MESSAGE("");
-
-        } else if(!Parser_validations.validate(e).isEmpty() || !Parser_validations.validate(e).equals("")) {
-            // Check for all other command conditions
-            set_ERROR_MESSAGE(Parser_validations.validate(e));
-            return INDICATE_CONDITIONAL_EXIT_STATUS;
-        }else if (e.indexOf(LPM_COMMANDS.SHOW_CAPABILITIES.toString()) == INDICATE_EXECUTION_SUCCESS) {
-            this.parse_and_execute_SHOW_CAPABILITIES(e);
-        } else if (e.indexOf(LPM_COMMANDS.HELP.toString()) == INDICATE_EXECUTION_SUCCESS) {
-            this.parse_and_execute_HELP(e);
-        } else if (e.indexOf(LPM_COMMANDS.EXIT.toString()) == INDICATE_EXECUTION_SUCCESS) {
-            return Parser.INDICATE_IMMEDIATE_EXIT_STATUS;
-
-            /* add support for communicative classes */
-        } else {
-            this.parse_and_execute_HELP(e);
-        }
-
-        if(returnResult != null) {
-            return returnResult;
-        } 
-        return INDICATE_EXECUTION_SUCCESS;
     }
 
     private void parse_and_execute_HELP(String e) {
@@ -275,10 +282,8 @@ public class Parser_implement implements Parser {
         return returnResult;
     }
 
-    public static  void setReturnResult(int returnResult) {
+    public static void setReturnResult(int returnResult) {
         Parser_implement.returnResult = returnResult;
     }
 
-
-    
 }

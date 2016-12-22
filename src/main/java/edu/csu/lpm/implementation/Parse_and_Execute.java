@@ -14,6 +14,7 @@ import static edu.csu.lpm.interfaces.Parser.INDICATE_ARGUMENT_MISMATCH;
 import static edu.csu.lpm.interfaces.Parser.INDICATE_CONDITIONAL_EXIT_STATUS;
 import static edu.csu.lpm.interfaces.Parser.INDICATE_EXECUTION_SUCCESS;
 import static edu.csu.lpm.interfaces.Parser.INDICATE_INVALID_ARGUMENT_VALUE;
+import edu.csu.lpm.machine.PM_Shell;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
@@ -1674,12 +1675,12 @@ public class Parse_and_Execute {
             String old_password =  cmdParam[1];
             String actualPassword = Parser_implement.userdb.getPasswordFromDB();
             if(!old_password.equals(actualPassword)) {
-                System.out.println("Invalid Detail. Unable to perform command");
+                PM_Shell.out.println("Invalid Detail. Unable to perform command");
                 return INDICATE_INVALID_ARGUMENT_VALUE;
             } 
             String new_password = cmdParam[2];
             Parser_implement.userdb.updateNewPasswordInDB(new_password);
-            
+            PM_Shell.out.println("Password changed successfully");
         } catch (SQLException ex) {
             Logger.getLogger(Parse_and_Execute.class.getName()).log(Level.SEVERE, null, ex);
             return INDICATE_CONDITIONAL_EXIT_STATUS;

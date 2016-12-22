@@ -177,7 +177,7 @@ public final class UserAuthDAO_impl implements UserAuthDAO {
     private boolean checkTableExist() {
         try {
             String result = getFromDB(true);
-            if (result.equalsIgnoreCase("error")) {
+            if (!result.equalsIgnoreCase("error")) {
                 return true;
             }
 
