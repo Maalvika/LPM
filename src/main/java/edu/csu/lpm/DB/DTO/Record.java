@@ -32,4 +32,5 @@ package edu.csu.lpm.DB.DTO;
 public interface Record 
 {
      
+    
 }
