@@ -168,12 +168,19 @@ public class Parser_implement implements Parser {
             if (this.dd != null) {
                 try {
                     Parser_implement.db = this.dd.dispatch_DB_Access();
-                    userdb = dd.dispatch_userDB_Access();
+                    
                 } catch (SQLException sex) {
                     Logger.getLogger(Parser_implement.class.getName()).log(Level.SEVERE, null, sex);
-                } catch (RecordDAO_Exception ex) {
-                    Logger.getLogger(Parser_implement.class.getName()).log(Level.SEVERE, null, ex);
                 }
+            }
+        } 
+        if (userdb == null) {
+            try {
+                userdb = dd.dispatch_userDB_Access();
+            } catch (SQLException ex) {
+                Logger.getLogger(Parser_implement.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (RecordDAO_Exception ex) {
+                Logger.getLogger(Parser_implement.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
@@ -185,6 +192,15 @@ public class Parser_implement implements Parser {
     }
     
     public UserAuthDAO getUserAuthDAO() {
+        if (userdb == null) {
+            try {
+                userdb = dd.dispatch_userDB_Access();
+            } catch (SQLException ex) {
+                Logger.getLogger(Parser_implement.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (RecordDAO_Exception ex) {
+                Logger.getLogger(Parser_implement.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         return userdb;
     }
  

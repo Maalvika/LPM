@@ -29,6 +29,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -42,9 +44,13 @@ public final class UserAuthDAO_impl implements UserAuthDAO {
     private final String password = "lpm-admin";
 
     public UserAuthDAO_impl(Connection c) throws SQLException, RecordDAO_Exception {
+
         initConnection(c);
+
         createTable_Authentication_DB();
-        insert_default_Authentication_DB();
+        if (checkTableExist() == false) {
+            insert_default_Authentication_DB();
+        }
     }
 
     @Override
@@ -153,8 +159,8 @@ public final class UserAuthDAO_impl implements UserAuthDAO {
 
             int index = 1;
 
-            ps.setString(index++, username);
             ps.setString(index++, newPassword);
+            ps.setString(index++, username);
 
             ps.addBatch();
             this.conn.setAutoCommit(false);
@@ -168,4 +174,16 @@ public final class UserAuthDAO_impl implements UserAuthDAO {
         return INDICATE_EXECUTION_SUCCESS;
     }
 
+    private boolean checkTableExist() {
+        try {
+            String result = getFromDB(true);
+            if (result.equalsIgnoreCase("error")) {
+                return true;
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(UserAuthDAO_impl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
 }

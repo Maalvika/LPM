@@ -63,7 +63,7 @@ public interface DB_Constants
         + ComponentsTable.COMPONENTS_DB_TABLE_NAME + COMPONENTS_DB_SCHEMA;        
         
         
-        final String create_USER_AUTH_DB_SQL = "create table " 
+        final String create_USER_AUTH_DB_SQL = "create table if not exists " 
         + UserAuthDAO.USER_AUTH_DB_TABLE_NAME + UserAuthDAO.USER_AUTH_DB_SCHEMA;
         
         final String drop_COMPONENTS_DB_SQL = "drop table if exists " 

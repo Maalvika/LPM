@@ -21,7 +21,7 @@ public class Parser_validations {
 
     public static String validate(String e) {
 
-        Parser.LPM_COMMANDS pmCmd = Parser.LPM_COMMANDS.valueOf(e.substring(INDICATE_EXECUTION_SUCCESS));
+        Parser.LPM_COMMANDS pmCmd = Parser.LPM_COMMANDS.valueOf(e.split(" ")[0]);
         String errorMsg = "";
         switch (pmCmd) {
             case COUNT_CAPABILITIES_CLASSES:
