@@ -39,12 +39,14 @@ TASK 2: Add CHANGE_PASSWORD command and authentication
 CHANGE_PASSWORD command requires the interaction with Parser layer to interpret the it and check if valid arguments are present or not. If Parser parses the command successfully, then values are sent to DB layer.
 In DB layer, a user authentication table exits which check whether old password is correct or not. After satisfying all conditions, the password is changed in the database.
 New Classes added to accommodate this command:
-1. UserAuthDAO – It is an interface that provides functionality to access the user authentication database.
+1. UserAuthDAO â€“ It is an interface that provides functionality to access the user authentication database.
 2. UserAuthDAO_impl: It contains the implementation for UserAuthDAO.
 3. New constants were added in DB_Constants.
 
 TASK 3: Enable Remote Log-in
 In order to work on this task, java.net.Socket and java.net.ServerSockets class are used. 
 The server will run on port 9001. Only one client will be able to connect to server at a point of time.
+The Remote Connection details such as port, server address are added in RemoteConnect Interface.
+The Main.java is remove, instead ServerMain.java and ClientMain.java are made, which handles Client side and Server side
 
 
