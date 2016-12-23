@@ -18,6 +18,8 @@ package edu.csu.lpm.machine;
 
 import edu.csu.lpm.DB.interfaces.DB_Constants;
 import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -41,10 +43,7 @@ public class ServerMain {
      * The set of all the print writers for all the client. This set is kept so
      * we can easily broadcast messages.
      */
-    private static Map<String/*IP address*/, PrintWriter> client = new HashMap<String, PrintWriter>();
-    
-    private String clientIP;
-    private PrintWriter clientOut;
+    private static Map<String/*IP address*/, DataOutputStream> client = new HashMap<String, DataOutputStream>();
 
     public static void main(String[] args) throws Exception {
         ServerSocket listener = new ServerSocket(RemoteConnect.PORT);
@@ -64,8 +63,8 @@ public class ServerMain {
     private static class Handler extends Thread {
 
         private Socket socket;
-        private BufferedReader in;
-        private PrintWriter out;
+        private DataInputStream in;
+        private DataOutputStream out;
 
         public Handler(Socket socket) {
             this.socket = socket;
@@ -74,9 +73,8 @@ public class ServerMain {
         @Override
         public void run() {
             try {
-                in = new BufferedReader(new InputStreamReader(
-                        socket.getInputStream()));
-                out = new PrintWriter(socket.getOutputStream(), true);
+                in = new DataInputStream(socket.getInputStream());
+                out = new DataOutputStream(socket.getOutputStream());
                 File db = new File(DB_Constants.DB_NAME);
                 PM_Shell sh = new PM_Shell(out, in);
 
@@ -85,7 +83,7 @@ public class ServerMain {
 
                 } else {
 
-                    out.println("PM Database " + DB_Constants.DB_NAME + " does not exist! Exiting.");
+                    out.writeUTF("PM Database " + DB_Constants.DB_NAME + " does not exist! Exiting.");
                 }
 
                 client.put(socket.getRemoteSocketAddress().toString(), out);

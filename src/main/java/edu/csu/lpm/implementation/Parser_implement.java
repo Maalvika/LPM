@@ -29,6 +29,7 @@ import edu.csu.lpm.DB.implementation.RecordDAO_implement;
 import edu.csu.lpm.interfaces.LinuxCapabilitiesPolicyContainer;
 import edu.csu.lpm.interfaces.Parser;
 import edu.csu.lpm.machine.PM_Shell;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
@@ -256,7 +257,11 @@ public class Parser_implement implements Parser {
             }
             return INDICATE_EXECUTION_SUCCESS;
         } catch (IllegalArgumentException ae) {
-            PM_Shell.out.println("Invalid command value");
+            try {
+                PM_Shell.out.writeUTF("Invalid command value");
+            } catch (IOException ex) {
+                Logger.getLogger(Parser_implement.class.getName()).log(Level.SEVERE, null, ex);
+            }
             return INDICATE_INVALID_ARGUMENT_VALUE;
         }
     }

@@ -17,6 +17,8 @@
 package edu.csu.lpm.machine;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -24,23 +26,29 @@ import java.net.Socket;
 
 /**
  * Remote Client
+ *
  * @author maalv
  */
 public class ClientMain {
 
-    private static BufferedReader in;
-    private static PrintWriter out;
+    private static DataInputStream in;
+    private static DataOutputStream out;
 
     public static void main(String[] args) throws IOException {
 
         Socket socket = new Socket(RemoteConnect.serverAddress, RemoteConnect.PORT);
-        in = new BufferedReader(new InputStreamReader(
-                socket.getInputStream()));
-        out = new PrintWriter(socket.getOutputStream(), true);
-
+        in = new DataInputStream(socket.getInputStream());
+        out = new DataOutputStream(socket.getOutputStream());
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         while (true) {
-            String myResponse = in.readLine();
-            out.print(myResponse);
+            String serverResponse = in.readUTF();
+            System.out.println(serverResponse);
+            System.out.println("Do you want to reply to server:(y/n)");
+            String ch = br.readLine();
+            if (ch.equalsIgnoreCase("y")) {
+                String myResponse = br.readLine();
+                out.writeUTF(myResponse);
+            }
         }
 
     }
