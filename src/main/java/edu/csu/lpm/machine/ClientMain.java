@@ -42,11 +42,22 @@ public class ClientMain {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         while (true) {
             String serverResponse = in.readUTF();
-            System.out.println(serverResponse);
-            System.out.println("Do you want to reply to server:(y/n)");
-            String ch = br.readLine();
-            if (ch.equalsIgnoreCase("y")) {
+            System.out.print(serverResponse);
+            if(serverResponse.equalsIgnoreCase("exit")) {
+            	break;
+            }
+            
+            if (serverResponse.equalsIgnoreCase("tinyPM::<>")||serverResponse.contains("Enter username")|| 
+            		serverResponse.contains("Enter password")) {
                 String myResponse = br.readLine();
+                out.writeUTF(myResponse);
+            }
+        }
+
+    }
+
+}
+
                 out.writeUTF(myResponse);
             }
         }
