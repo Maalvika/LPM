@@ -84,18 +84,3 @@ public class PM_Shell {
     }
 
 }
-
-        for (;;) { //shell loop starts
-
-            show_Prompt();
-            //TODO: pass out reference so that we can write 
-            x = p.parse_and_execute_Command(in.readLine().trim());
-            out.writeUTF(p.get_ERROR_MESSAGE());
-            out.writeUTF(p.get_ResultOutput().get(0).toString());
-            if (x == Parser.INDICATE_IMMEDIATE_EXIT_STATUS) {
-                break;
-            }
-        } //end of for loop
-    }
-
-}
