@@ -44,9 +44,66 @@ public class ServerMain {
      * we can easily broadcast messages.
      */
     private static Map<String/*IP address*/, DataOutputStream> client = new HashMap<String, DataOutputStream>();
+    private static Socket currentClient = null;
 
     public static void main(String[] args) throws Exception {
         ServerSocket listener = new ServerSocket(RemoteConnect.PORT);
+        try {
+            while (true) {
+                if(client.size() == 0) {
+                	currentClient = listener.accept();
+                    new Handler(currentClient).start();
+                } else {
+                    System.out.println("Other client trying to connect");
+                }
+            }
+        } finally {
+            listener.close();
+        }
+    }
+    
+    public static void removeCurrentClient(){
+    	client.remove(currentClient.getInetAddress());
+    	currentClient = null;
+    }
+
+    private static class Handler extends Thread {
+
+        private Socket socket;
+        private DataInputStream in;
+        private DataOutputStream out;
+
+        public Handler(Socket socket) {
+            this.socket = socket;
+        }
+
+        @Override
+        public void run() {
+            try {
+                in = new DataInputStream(socket.getInputStream());
+                out = new DataOutputStream(socket.getOutputStream());
+                File db = new File(DB_Constants.DB_NAME);
+                PM_Shell sh = new PM_Shell(out, in);
+
+                if (db.exists()) {
+                    sh.verify();
+
+                } else {
+
+                    out.writeUTF("PM Database " + DB_Constants.DB_NAME + " does not exist! Exiting.");
+                }
+
+                client.put(socket.getRemoteSocketAddress().toString(), out);
+
+            } catch (IOException ex) {
+                Logger.getLogger(ServerMain.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                Logger.getLogger(ServerMain.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+}
+
         try {
             while (true) {
                 if(client.size() == 0) {
