@@ -57,11 +57,3 @@ public class ClientMain {
     }
 
 }
-
-                out.writeUTF(myResponse);
-            }
-        }
-
-    }
-
-}
