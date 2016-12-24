@@ -1678,7 +1678,7 @@ public class Parse_and_Execute {
             if(!old_password.equals(actualPassword)) {
                 PM_Shell.out.writeUTF("Invalid Detail. Unable to perform command");
                 return INDICATE_INVALID_ARGUMENT_VALUE;
-            } 
+            }
             String new_password = cmdParam[2];
             Parser_implement.userdb.updateNewPasswordInDB(new_password);
             PM_Shell.out.writeUTF("Password changed successfully");
@@ -1691,6 +1691,15 @@ public class Parse_and_Execute {
         return INDICATE_EXECUTION_SUCCESS;
         
      
+    }
+    
+    public static void command_HELP(String e) {
+        if (e == null || e.isEmpty()) {
+            return;
+        }
+        Parser_implement.set_ResultSize(0);
+        Parser_implement.refill_ResultOutput("");
+        Parser_implement.set_ERROR_MESSAGE(Parser.HELP_MESSAGE);
     }
     
     
