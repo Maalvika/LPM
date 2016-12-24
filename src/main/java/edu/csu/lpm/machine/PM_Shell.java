@@ -13,6 +13,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PM_Shell {
 
@@ -31,9 +33,9 @@ public class PM_Shell {
 
     public void verify() throws IOException, SQLException, Exception {
 
-        out.writeUTF("Enter username");
+        out.writeUTF("Enter username: ");
         String username = in.readUTF();
-        out.writeUTF("Enter password");
+        out.writeUTF("Enter password: ");
         String password = in.readUTF();
         if (!username.equals(p.getUserAuthDAO().getUsernameFromDB())
                 || !password.equals(p.getUserAuthDAO().getPasswordFromDB())) {
@@ -46,6 +48,42 @@ public class PM_Shell {
 
     private void process_UserInput() throws Exception {
         int x = -1;
+
+        for (;;) { //shell loop starts
+
+            show_Prompt();
+            //TODO: pass out reference so that we can write 
+            String cmd = in.readUTF().trim();
+            x = p.parse_and_execute_Command(cmd);
+            String errorMsg = p.get_ERROR_MESSAGE();
+            ArrayList<String> arr = p.get_ResultOutput();
+            if(x == Parser.INDICATE_IMMEDIATE_EXIT_STATUS) {
+            	errorMsg = "exit";
+            	out.writeUTF(errorMsg);
+            	//ServerMain.removeCurrentClient();
+            	break;
+            }
+            if(errorMsg!="") {
+            	out.writeUTF(errorMsg);
+            }
+            if(!arr.isEmpty()) {
+            	out.writeUTF(buildStringFromArray(arr));
+            }
+            
+        } //end of for loop
+        
+    }
+    
+    private String buildStringFromArray(ArrayList<String> arr) {
+    	StringBuilder builder = new StringBuilder();
+    	for(String message: arr) {
+    		builder.append(message+"\n");
+    	}
+    	
+    	return builder.toString();
+    }
+
+}
 
         for (;;) { //shell loop starts
 
