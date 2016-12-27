@@ -149,7 +149,6 @@ public class Parser_validations {
                 }
                 break;
             case HELP:
-            	System.out.println("abcd");
             	Parse_and_Execute.command_HELP(e);
             	break;	
 
