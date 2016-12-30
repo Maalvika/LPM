@@ -19,7 +19,7 @@ if [ -e $HOME/$BASE/$DB_NAME ]
 then
         echo "Base db file found!"
         echo "making a copy to target."
-	cp $HOME/$BASE/$DB_NAME $HOME/$INSTALL_BASE
+	cp -n $HOME/$BASE/$DB_NAME $HOME/$INSTALL_BASE
 else
 	echo "no base db file found!"
 	exit $ERROR
@@ -41,21 +41,22 @@ fi
 #cp ../tinypm.db ../target/classes/
 
 
-ARGS=1
+ARGS=2
 
 if [ $# -ne $ARGS ]  # Correct number of arguments passed to script?
 then
-  echo "1 argument must be supplied:"
-  echo "argument 1: absolute path to the sqlite driver"
+  echo "2 argument must be supplied:"
+  echo "argument 1: absolute path to the sqlite driver and argument 2: server address"
   exit $E_BADARGS
 fi
 
 #In our case (to save disk space) the driver is located in a separate maven .m2 directory but in reality all dependencies should be supplied in the distribution 
 #SQLITE_DRV=/s/chopin/b/grad/kirill/.m2/repository/org/xerial/sqlite-jdbc/3.7.2/sqlite-jdbc-3.7.2.jar
 SQLITE_DRV=$1
+SERVER_ADDRESS=$2
 JAVA=`/bin/which java`
 
 cd $HOME/$INSTALL_BASE
 export CLASSPATH=$SQLITE_DRV:$CLASSPATH
-$JAVA edu/csu/tinypm/machine/Main
+$JAVA edu/csu/tinypm/machine/ClientMain $SERVER_ADDRESS
 

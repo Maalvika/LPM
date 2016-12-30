@@ -25,7 +25,6 @@ public interface RemoteConnect {
     /**
      * The port that the server listens on.
      */
-    public static final int PORT = 9001;
-    public static final String serverAddress = "localhost";
+    public static final int PORT = 8888;
     
 }

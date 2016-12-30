@@ -36,22 +36,27 @@ public class ClientMain {
 
     public static void main(String[] args) throws IOException {
 
-        Socket socket = new Socket(RemoteConnect.serverAddress, RemoteConnect.PORT);
-        in = new DataInputStream(socket.getInputStream());
-        out = new DataOutputStream(socket.getOutputStream());
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        while (true) {
-            String serverResponse = in.readUTF();
-            System.out.print(serverResponse);
-            if(serverResponse.equalsIgnoreCase("exit")) {
-            	break;
+        try {
+            String serverAddress = args[0];
+            Socket socket = new Socket(serverAddress, RemoteConnect.PORT);
+            in = new DataInputStream(socket.getInputStream());
+            out = new DataOutputStream(socket.getOutputStream());
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            while (true) {
+                String serverResponse = in.readUTF();
+                System.out.print(serverResponse);
+                if (serverResponse.equalsIgnoreCase("exit")) {
+                    break;
+                }
+
+                if (serverResponse.equalsIgnoreCase("tinyPM::<>") || serverResponse.contains("Enter username")
+                        || serverResponse.contains("Enter password")) {
+                    String myResponse = br.readLine();
+                    out.writeUTF(myResponse);
+                }
             }
-            
-            if (serverResponse.equalsIgnoreCase("tinyPM::<>")||serverResponse.contains("Enter username")|| 
-            		serverResponse.contains("Enter password")) {
-                String myResponse = br.readLine();
-                out.writeUTF(myResponse);
-            }
+        } catch (NullPointerException npe) {
+            System.out.println("Server address is not specified");
         }
 
     }

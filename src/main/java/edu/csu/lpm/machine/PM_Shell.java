@@ -28,7 +28,7 @@ public class PM_Shell {
     }
 
     private void show_Prompt() throws IOException {
-        out.writeUTF("tinyPM::<>");
+        out.writeUTF("LPM::<>");
     }
 
     public void verify() throws IOException, SQLException, Exception {

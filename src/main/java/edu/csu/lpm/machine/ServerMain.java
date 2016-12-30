@@ -16,20 +16,12 @@
  */
 package edu.csu.lpm.machine;
 
-import edu.csu.lpm.DB.interfaces.DB_Constants;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This provide remote connectivity so it will require remote client to connect
@@ -43,16 +35,20 @@ public class ServerMain {
      * The set of all the print writers for all the client. This set is kept so
      * we can easily broadcast messages.
      */
-    private static Map<String/*IP address*/, DataOutputStream> client = new HashMap<String, DataOutputStream>();
+    static Map<String/*IP address*/, DataOutputStream> client = new HashMap<String, DataOutputStream>();
     private static Socket currentClient = null;
 
     public static void main(String[] args) throws Exception {
+        // Prints the current systems IP address
+        InetAddress iAddress = InetAddress.getLocalHost();
+        String server_IP = iAddress.getHostAddress();
+        System.out.println("Server IP address : " +server_IP);
         ServerSocket listener = new ServerSocket(RemoteConnect.PORT);
         try {
             while (true) {
                 if(client.size() == 0) {
                 	currentClient = listener.accept();
-                    new Handler(currentClient).start();
+                    new ServerHandler(currentClient).start();
                 } else {
                     System.out.println("Other client trying to connect");
                 }
@@ -63,43 +59,7 @@ public class ServerMain {
     }
     
     public static void removeCurrentClient(){
-    	client.remove(currentClient.getInetAddress());
+    	client.remove(currentClient.getInetAddress().toString());
     	currentClient = null;
-    }
-
-    private static class Handler extends Thread {
-
-        private Socket socket;
-        private DataInputStream in;
-        private DataOutputStream out;
-
-        public Handler(Socket socket) {
-            this.socket = socket;
-        }
-
-        @Override
-        public void run() {
-            try {
-                in = new DataInputStream(socket.getInputStream());
-                out = new DataOutputStream(socket.getOutputStream());
-                File db = new File(DB_Constants.DB_NAME);
-                PM_Shell sh = new PM_Shell(out, in);
-
-                if (db.exists()) {
-                    sh.verify();
-
-                } else {
-
-                    out.writeUTF("PM Database " + DB_Constants.DB_NAME + " does not exist! Exiting.");
-                }
-
-                client.put(socket.getRemoteSocketAddress().toString(), out);
-
-            } catch (IOException ex) {
-                Logger.getLogger(ServerMain.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (Exception ex) {
-                Logger.getLogger(ServerMain.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
     }
 }
